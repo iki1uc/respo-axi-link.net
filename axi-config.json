@@ -1,1 +1,10 @@
+{
+    "protocol": "AXI4",
+    "master": true,
+    "slave": false,
+    "address_width": 32,
+    "data_width": 32,
+    "burst": "INCR",
+    "bridge": "eLink AXI Bridge"
+}
 
