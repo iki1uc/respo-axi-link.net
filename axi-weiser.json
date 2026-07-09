@@ -1,1 +1,9 @@
+{
+    "module": "RESPO AXI-Link",
+    "version": "1.0",
+    "router": "RESPO_CORE_ROUTER",
+    "scan-hub": "RESPO_SCAN_HUB",
+    "arg-scan": "RESPO_ARG_SCAN",
+    "position-user": "RESPO_POSITION_USER"
+}
 
