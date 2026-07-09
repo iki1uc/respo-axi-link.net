@@ -1,1 +1,9 @@
+{
+    "axi": "linked",
+    "bridge": "stable",
+    "master": "active",
+    "protocol": "AXI4",
+    "scan": "ready",
+    "router": "connected"
+}
 
