@@ -1,77 +1,22 @@
 <!DOCTYPE html>
-<html lang="de">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>respo-axi-link.net – Bridge</title>
-  <style>
-    body {
-      background: #000;
-      color: #fff;
-      font-family: monospace;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .core {
-      text-align: center;
-      animation: fadeIn 1.2s ease forwards;
-    }
-
-    .respo {
-      font-size: 42px;
-      color: #0f0;
-      animation: respoPulse 1.8s infinite ease-in-out;
-      letter-spacing: 3px;
-    }
-
-    .axi {
-      font-size: 32px;
-      color: #0ff;
-      margin-top: 10px;
-      animation: axiGlow 2.4s infinite ease-in-out;
-    }
-
-    .link {
-      font-size: 28px;
-      color: #ff0;
-      margin-top: 10px;
-      animation: linkTrace 3.2s infinite ease-in-out;
-      opacity: 0.8;
-    }
-
-    @keyframes respoPulse {
-      0%   { opacity: 0.4; transform: scale(0.95); text-shadow: 0 0 4px #0f0; }
-      50%  { opacity: 1;   transform: scale(1.15); text-shadow: 0 0 22px #55ff55; }
-      100% { opacity: 0.4; transform: scale(0.95); text-shadow: 0 0 4px #0f0; }
-    }
-
-    @keyframes axiGlow {
-      0%   { text-shadow: 0 0 4px #0ff; }
-      50%  { text-shadow: 0 0 18px #33ffff; }
-      100% { text-shadow: 0 0 4px #0ff; }
-    }
-
-    @keyframes linkTrace {
-      0%   { opacity: 0.3; text-shadow: 0 0 2px #ff0; }
-      50%  { opacity: 1;   text-shadow: 0 0 14px #ffff55; }
-      100% { opacity: 0.3; text-shadow: 0 0 2px #ff0; }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+    <title>RESPO AXI-Link</title>
+    <script src="axi-link.js"></script>
+    <script src="router-hook.js"></script>
 </head>
+
 <body>
-  <div class="core">
-    <div class="respo">RESPO</div>
-    <div class="axi">AXI</div>
-    <div class="link">LINK.NET</div>
-  </div>
+    <h1>RESPO AXI-Link</h1>
+    <p>Verbindet RESPO-Systeme mit AXI‑fähigen Modulen.</p>
+
+    <h2>Aktionen</h2>
+    <button onclick="AXI.init()">AXI initialisieren</button>
+    <button onclick="AXI.check()">AXI prüfen</button>
+    <button onclick="AXI.write(0x1000, 42)">AXI Write</button>
+    <button onclick="AXI.read(0x1000)">AXI Read</button>
+
+    <h2>Router</h2>
+    <button onclick="RouterHook.send('axi-ready')">Router informieren</button>
 </body>
 </html>
-
