@@ -1,10 +1,24 @@
 {
-    "protocol": "AXI4",
-    "master": true,
-    "slave": false,
-    "address_width": 32,
-    "data_width": 32,
-    "burst": "INCR",
-    "bridge": "eLink AXI Bridge"
-}
+  "version": "1.2",
+  "system": "RESPO-AXI-LINK.NET",
+  "mode": "RAW",
+  "default-axis": "X",
 
+  "routing": {
+    "enable-weiser": true,
+    "enable-lage": true,
+    "enable-link": true,
+    "fallback": "error.html"
+  },
+
+  "visual": {
+    "enable": true,
+    "depth-factor": 1.0,
+    "color-mode": "group-based"
+  },
+
+  "log": {
+    "enabled": true,
+    "level": "debug"
+  }
+}
