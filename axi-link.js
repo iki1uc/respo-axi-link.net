@@ -1,28 +1,24 @@
-const AXI = {
-    config: null,
+/* ============================================================
+   AXI-LINK · RESPO-AXI-LINK.NET
+   Verbindet Achsen, Lage, Weiser und Router-Hook
+   ============================================================ */
 
-    init() {
-        fetch("axi-config.json")
-            .then(r => r.json())
-            .then(cfg => {
-                this.config = cfg;
-                console.log("AXI initialisiert:", cfg);
-            });
-    },
+async function axiLink(axis) {
+    const config = await fetch("axi-config.json").then(r => r.json());
+    const lage   = await fetch("axi-lage.json").then(r => r.json());
+    const weiser = await fetch("axi-weiser.json").then(r => r.json());
 
-    check() {
-        console.log("AXI-Link geprüft.");
-        console.log("Master aktiv:", this.config?.master);
-        console.log("Protokoll:", this.config?.protocol);
-    },
+    const info = {
+        axis: axis,
+        slot: lage[axis]?.slot,
+        depth: lage[axis]?.depth,
+        group: lage[axis]?.group,
+        route: weiser[axis]?.route || weiser.fallback,
+        mode: config.mode
+    };
 
-    write(addr, data) {
-        console.log(`AXI WRITE → Addr: ${addr}, Data: ${data}`);
-    },
+    console.log("AXI-LINK:", info);
+    return info;
+}
 
-    read(addr) {
-        console.log(`AXI READ → Addr: ${addr}`);
-        return 0;
-    }
-};
-
+export { axiLink };
