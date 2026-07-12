@@ -1,9 +1,22 @@
 {
-    "axi": "linked",
-    "bridge": "stable",
-    "master": "active",
-    "protocol": "AXI4",
-    "scan": "ready",
-    "router": "connected"
-}
+  "X":     { "slot": 1,  "group": "primary",   "depth": 0.40 },
+  "Y":     { "slot": 2,  "group": "primary",   "depth": 0.40 },
+  "Z":     { "slot": 3,  "group": "primary",   "depth": 0.40 },
 
+  "T":     { "slot": 4,  "group": "secondary", "depth": 0.50 },
+  "S":     { "slot": 5,  "group": "secondary", "depth": 0.50 },
+
+  "MOVE":  { "slot": 6,  "group": "motion",    "depth": 0.60 },
+  "STATE": { "slot": 7,  "group": "motion",    "depth": 0.60 },
+  "FLOW":  { "slot": 8,  "group": "motion",    "depth": 0.70 },
+
+  "alpha": { "slot": 12, "group": "tri-core",  "depth": 0.70 },
+  "beta":  { "slot": 13, "group": "tri-core",  "depth": 0.75 },
+  "gamma": { "slot": 14, "group": "tri-core",  "depth": 0.80 },
+
+  "RP":    { "slot": 21, "group": "special",   "depth": 0.45 },
+  "NC":    { "slot": 22, "group": "special",   "depth": 0.45 },
+  "MS":    { "slot": 23, "group": "special",   "depth": 0.45 },
+  "R1":    { "slot": 24, "group": "special",   "depth": 0.45 },
+  "LS":    { "slot": 25, "group": "special",   "depth": 0.45 }
+}
