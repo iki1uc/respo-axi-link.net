@@ -1,22 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>RESPO AXI-Link</title>
-    <script src="axi-link.js"></script>
-    <script src="router-hook.js"></script>
+<meta charset="UTF-8">
+<title>RESPO‑AXI‑LINK.NET</title>
+
+<script type="module">
+import { axiLink } from "./axi-link.js";
+
+async function buildButtons() {
+    const lage = await fetch("axi-lage.json").then(r => r.json());
+    const container = document.getElementById("axis-buttons");
+
+    Object.keys(lage).forEach(axis => {
+        const btn = document.createElement("button");
+        btn.innerText = axis;
+        btn.onclick = async () => {
+            const info = await axiLink(axis);
+            window.location.href = info.route + "?axis=" + axis;
+        };
+        container.appendChild(btn);
+    });
+}
+
+window.addEventListener("DOMContentLoaded", buildButtons);
+</script>
+
 </head>
-
 <body>
-    <h1>RESPO AXI-Link</h1>
-    <p>Verbindet RESPO-Systeme mit AXI‑fähigen Modulen.</p>
 
-    <h2>Aktionen</h2>
-    <button onclick="AXI.init()">AXI initialisieren</button>
-    <button onclick="AXI.check()">AXI prüfen</button>
-    <button onclick="AXI.write(0x1000, 42)">AXI Write</button>
-    <button onclick="AXI.read(0x1000)">AXI Read</button>
+<h1>RESPO‑AXI‑LINK.NET</h1>
+<p>Dynamischer Achsen‑Dispatcher</p>
 
-    <h2>Router</h2>
-    <button onclick="RouterHook.send('axi-ready')">Router informieren</button>
+<div id="axis-buttons"></div>
+
 </body>
 </html>
