@@ -2,20 +2,59 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>AXI‑ID · Dynamisch</title>
+<title>AXI‑ID · Dynamische Achsenliste (UPGRADE)</title>
+
+<style>
+body { background:#111; color:#eee; font-family:Consolas, monospace; padding:20px; }
+h1 { color:#6cf; }
+table { width:100%; border-collapse:collapse; margin-top:20px; }
+th, td { border:1px solid #333; padding:8px; text-align:left; }
+th { background:#222; }
+.ok { color:#00ff88; }
+.err { color:#ff4444; }
+.group-A { background:#1a1a33; }
+.group-B { background:#332a1a; }
+.group-C { background:#1a332a; }
+.depth-0 { font-weight:bold; }
+.depth-1 { opacity:0.85; }
+.depth-2 { opacity:0.7; }
+#status { margin-top:10px; padding:10px; background:#222; border:1px solid #333; }
+</style>
 
 <script type="module">
 async function buildTable() {
-    const lage = await fetch("axi-lage.json").then(r => r.json());
     const table = document.getElementById("axi-table");
+    const status = document.getElementById("status");
 
-    Object.keys(lage).forEach(axis => {
+    let lage;
+
+    try {
+        const res = await fetch("axi-lage.json");
+        if (!res.ok) throw new Error("JSON nicht gefunden");
+        lage = await res.json();
+        status.innerHTML = "<span class='ok'>AXI‑LAGE geladen.</span>";
+    } catch (e) {
+        status.innerHTML = "<span class='err'>Fehler: axi-lage.json fehlt oder ist ungültig.</span>";
+        table.innerHTML = "<tr><td colspan='4' class='err'>Keine Daten geladen.</td></tr>";
+        return;
+    }
+
+    const axes = Object.keys(lage).sort((a,b) => lage[a].slot - lage[b].slot);
+
+    axes.forEach(axis => {
+        const ax = lage[axis];
         const row = document.createElement("tr");
+
+        const groupClass = "group-" + ax.group;
+        const depthClass = "depth-" + ax.depth;
+
+        row.className = `${groupClass} ${depthClass}`;
+
         row.innerHTML = `
             <td>${axis}</td>
-            <td>${lage[axis].slot}</td>
-            <td>${lage[axis].group}</td>
-            <td>${lage[axis].depth}</td>
+            <td>${ax.slot}</td>
+            <td>${ax.group}</td>
+            <td>${ax.depth}</td>
         `;
         table.appendChild(row);
     });
@@ -27,9 +66,11 @@ window.addEventListener("DOMContentLoaded", buildTable);
 </head>
 <body>
 
-<h1>AXI‑ID · Dynamische Achsenliste</h1>
+<h1>AXI‑ID · Dynamische Achsenliste (UPGRADE)</h1>
 
-<table border="1">
+<div id="status">Lade AXI‑LAGE…</div>
+
+<table>
 <thead>
 <tr><th>Achse</th><th>Slot</th><th>Gruppe</th><th>Depth</th></tr>
 </thead>
