@@ -30,38 +30,12 @@ async function loadWeiser() {
 }
 
 /* ------------------------------------------------------------
-   4) ACHSEN-ROUTING
+   4) 6D ROUTER-MATRIX IMPORTIEREN
 ------------------------------------------------------------ */
-async function axiRoute(axis) {
-    const config = await loadConfig();
-    const lage   = await loadLage();
-    const weiser = await loadWeiser();
-
-    if (!axis || !weiser[axis]) {
-        console.warn("AXI-ATOR: Achse nicht gefunden:", axis);
-        return {
-            error: true,
-            message: "Achse unbekannt",
-            axis: axis
-        };
-    }
-
-    const axisInfo = {
-        axis: axis,
-        slot: lage[axis]?.slot || null,
-        depth: lage[axis]?.depth || null,
-        group: lage[axis]?.group || null,
-        route: weiser[axis]?.route || null,
-        mode: config.mode || "RAW",
-        system: config.system || "AXI-ATOR"
-    };
-
-    console.log("AXI-ATOR Routing:", axisInfo);
-    return axisInfo;
-}
+import { routerMatrix } from "./router-matrix.js";
 
 /* ------------------------------------------------------------
-   5) URL-PARSER (index.html → router-hook.js)
+   5) URL-PARSER
 ------------------------------------------------------------ */
 function parseURL() {
     const params = new URLSearchParams(window.location.search);
@@ -75,7 +49,7 @@ function parseURL() {
 }
 
 /* ------------------------------------------------------------
-   6) ROUTING-AUSFÜHRUNG
+   6) ROUTING-AUSFÜHRUNG (6D-Matrix)
 ------------------------------------------------------------ */
 async function runRouting() {
     const p = parseURL();
@@ -85,19 +59,19 @@ async function runRouting() {
         return;
     }
 
-    const result = await axiRoute(p.axis);
+    const result = await routerMatrix(p.axis);
 
     const output = document.getElementById("axi-output");
     if (output) {
         output.innerHTML = `
-            <h2>AXI‑ATOR Routing</h2>
+            <h2>6D‑Router‑Matrix</h2>
             <p><strong>Achse:</strong> ${result.axis}</p>
             <p><strong>Slot:</strong> ${result.slot}</p>
             <p><strong>Depth:</strong> ${result.depth}</p>
             <p><strong>Gruppe:</strong> ${result.group}</p>
             <p><strong>Route:</strong> ${result.route}</p>
             <p><strong>Modus:</strong> ${result.mode}</p>
-            <p><strong>System:</strong> ${result.system}</p>
+            <p><strong>Status:</strong> ${result.valid ? "✔ erfüllt" : "❌ Fehler"}</p>
         `;
     }
 }
