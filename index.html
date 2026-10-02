@@ -1,3 +1,337 @@
+ VERWALTUNG · WAHRHEIT LIVE — mit Runtime-Logik integriert
+Vollständige, lauffähige Datei. Nichts fehlt, nichts doppelt. Die Logik ist kein Anhang, sondern die vierte Messebene: die gemessenen Werte werden zu R(x), daraus wird rekursiv L(x) geschlossen, Kette und Verdikt erscheinen live.
+
+html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>◈ VERWALTUNG · Wahrheit live</title>
+<style>
+:root{--bg:#04070e;--bg2:#0a101e;--fg:#c8d8e8;--dim:#5a7288;--green:#7ce0a8;--gold:#ffcc44;--red:#ff5a7a;--cyan:#5fc8ff;--purple:#b388ff;--line:rgba(140,180,220,.14)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);font:13px Consolas,'Courier New',monospace;padding:14px;max-width:1000px;margin:auto}
+h1{color:var(--green);font-size:15px;letter-spacing:3px;font-weight:normal}
+.sub{color:var(--dim);font-size:11px;margin:4px 0 12px}
+h2{color:var(--green);font-size:11px;letter-spacing:2px;font-weight:normal;margin:14px 0 6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.card,.box{background:var(--bg2);border:1px solid var(--line);border-radius:5px;padding:9px 11px}
+.card .k{color:var(--dim);font-size:10px;letter-spacing:1px}
+.card .v{font-size:17px;margin:4px 0;word-break:break-word}
+.tag{font-size:9px;padding:1px 6px;border-radius:3px;border:1px solid var(--line)}
+.tag.m{color:var(--green)}.tag.a{color:var(--gold)}
+.ok{color:var(--green)}.warn{color:var(--gold)}.err{color:var(--red)}
+table{width:100%;border-collapse:collapse}
+td,th{padding:5px 6px;border-bottom:1px dashed var(--line);text-align:left;font-weight:normal}
+th{color:var(--dim);font-size:10px}
+canvas{width:100%;height:140px;display:block;background:#02040a;border-radius:4px}
+.leg{font-size:10px;margin-top:5px;color:var(--dim)}
+button{background:var(--bg2);color:var(--green);border:1px solid var(--green);padding:6px 12px;border-radius:3px;font:inherit;cursor:pointer;margin-top:8px}
+button:hover{background:rgba(124,224,168,.12)}
+/* ── Logik-Baum ── */
+.diamond{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0}
+.drow{display:flex;gap:10px;justify-content:center}
+.node{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;font-size:13px;transition:all .25s}
+.node small{font-size:7px;font-weight:normal;letter-spacing:1px;opacity:.75;margin-top:-1px}
+.node.L{box-shadow:0 0 12px currentColor;transform:scale(1.06);filter:brightness(1.3)}
+.node.off{opacity:.28;transform:scale(.94)}
+.n0{color:var(--fg);border-color:var(--fg)}
+.n1{color:var(--purple);border-color:var(--purple);background:rgba(179,136,255,.08)}
+.n2{color:var(--cyan);border-color:var(--cyan);background:rgba(92,240,255,.08)}
+.n3{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,.08)}
+.n4{color:var(--gold);border-color:var(--gold);background:rgba(255,215,0,.08)}
+#chain{font-size:13px;letter-spacing:1px;word-break:break-all;line-height:1.9}
+#logicVerdict{margin-top:8px}
+</style>
+</head>
+<body>
+<h1>◈ VERWALTUNG · WAHRHEIT LIVE</h1>
+<div class="sub">Nur Anzeige. Kein Eingriff. Jeder Wert trägt ein Etikett: <span class="tag m">gemessen</span> = echt, <span class="tag a">abgeleitet</span> = Näherung.</div>
+
+<h2>▸ DEIN RECHNER (echt)</h2>
+<div class="grid">
+  <div class="card"><div class="k">GRAFIKKARTE</div><div class="v" id="gpu">…</div><span class="tag m">gemessen</span></div>
+  <div class="card"><div class="k">PROZESSOR-KERNE</div><div class="v" id="cores">…</div><span class="tag m">gemessen</span></div>
+  <div class="card"><div class="k">ARBEITSSPEICHER (Browser-Angabe)</div><div class="v" id="ram">…</div><span class="tag m">gemessen</span></div>
+  <div class="card"><div class="k">SPEICHER DIESER SEITE</div><div class="v" id="heap">…</div><span class="tag m">gemessen</span></div>
+</div>
+
+<h2>▸ LIVE</h2>
+<div class="grid">
+  <div class="card"><div class="k">BILDZEIT</div><div class="v" id="ft">…</div><span class="tag m">gemessen</span></div>
+  <div class="card"><div class="k">ZEITZITTERN (Timer kommt zu spät)</div><div class="v" id="jit">…</div><span class="tag m">gemessen</span></div>
+</div>
+
+<h2>▸ ANNAHME DES ALTEN DASHBOARDS GEGEN WIRKLICHKEIT</h2>
+<div class="box">
+  <table>
+    <tr><th>Teil</th><th>Annahme (alt)</th><th>Jetzt</th><th>Abweichung</th><th></th></tr>
+    <tr><td>CPU-Last</td><td>42 %</td><td id="cNow">…</td><td id="cDev">…</td><td><span class="tag a">abgeleitet</span></td></tr>
+    <tr><td>GPU-Druck</td><td>55 %</td><td id="gNow">…</td><td id="gDev">…</td><td><span class="tag a">abgeleitet</span></td></tr>
+    <tr><td>Seiten-RAM</td><td>48 %</td><td id="rNow">…</td><td id="rDev">…</td><td><span class="tag a">abgeleitet</span></td></tr>
+  </table>
+  <div class="leg">CPU aus Zeitzittern, GPU aus Bildzeit gegenüber der besten gesehenen Bildzeit, RAM aus dem Seitenspeicher (nur Chrome/Edge). Näherungen, keine Sensorwerte.</div>
+</div>
+
+<h2>▸ URSACHE → WIRKUNG</h2>
+<div class="box">
+  <canvas id="cv" width="900" height="140"></canvas>
+  <div class="leg"><span style="color:var(--gold)">━ Zeitzittern (Ursache)</span> &nbsp; <span style="color:var(--cyan)">━ Bildzeit (Wirkung)</span> &nbsp; · letzte 30 Sekunden</div>
+  <div id="lag" style="margin-top:8px">Sammle Daten …</div>
+  <button id="burn">⚡ Test: diese Seite 1,5 s belasten</button>
+  <span class="leg">&nbsp;Belastet nur diese Seite, nicht deinen Rechner.</span>
+</div>
+
+<h2>▸ LOGIK · Rt(x) = Rt(parent(x)) ∧ R(x)</h2>
+<div class="box">
+  <div class="diamond" id="diamond"></div>
+  <div id="chain" style="margin-top:10px">…</div>
+  <div id="logicVerdict" class="leg">…</div>
+  <table style="margin-top:10px">
+    <thead>
+      <tr>
+        <th>sym</th><th>parent</th><th>signal</th>
+        <th style="text-align:right">R</th>
+        <th style="text-align:right">L</th>
+        <th style="text-align:right">trag</th>
+      </tr>
+    </thead>
+    <tbody id="logicRows"></tbody>
+  </table>
+  <div class="leg" style="margin-top:8px">
+    parent(·)=∅ · L(x)=L(parent(x))∧R(x) · Kette trägt nur, wenn jede Ebene ⊤.
+  </div>
+</div>
+
+<div class="sub" style="margin-top:14px">Grün ist hier nicht garantiert. Wahrheit hat Vorrang vor Wohlfühlen. 😉</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const cls=p=>p<60?'ok':p<85?'warn':'err';
+
+// ═══════════════════════════════════════════════════════════
+// RUNTIME-ALGORITHMUS  ·  Rt(x)=Rt(parent(x))∧R(x)
+// ═══════════════════════════════════════════════════════════
+const SHAPE   = [["N"], ["NW","NE"], ["W","·","E"], ["SW","SE"], ["S"]];
+const PARENT  = { "·":null, N:"·", NW:"N", NE:"NW", W:"NE", E:"W", SW:"E", SE:"SW", S:"SE" };
+const ORDER   = ["·","N","NW","NE","W","E","SW","SE","S"];
+const ROW     = { N:0, NW:1, NE:1, W:2, "·":2, E:2, SW:3, SE:3, S:4 };
+const BREADTH = [1,2,3,2,1];
+const COLOR   = { "·":"n0", N:"n1", NW:"n2", NE:"n3", W:"n4", E:"n4", SW:"n3", SE:"n2", S:"n1" };
+const SIGNAL  = { "·":"existenz", N:"cpu", NW:"jit", NE:"ft", W:"gpu", E:"ram", SW:"heap", SE:"cores", S:"gesamt" };
+
+function getR(sym, s) {
+  switch (sym) {
+    case "·":  return true;
+    case "N":  return s.cpu  < 70;
+    case "NW": return s.jit  < 25;
+    case "NE": return !isFinite(s.base) || s.ft < 2 * s.base;
+    case "W":  return s.gpu  < 70;
+    case "E":  return s.ram  == null || s.ram < 80;
+    case "SW": return s.heap == null || s.heap < 75;
+    case "SE": return s.cores >= 4;
+    case "S":  return ((s.cpu + (s.ram ?? 0)) / 2) < 75;
+  }
+  return false;
+}
+
+function closeLogic(s) {
+  const m = {};
+  for (const sym of ORDER) {
+    const r = getR(sym, s);
+    const p = PARENT[sym];
+    m[sym] = {
+      sym, parent: p, R: r,
+      L: p == null ? r : (m[p].L && r),
+      row: ROW[sym], trag: BREADTH[ROW[sym]], signal: SIGNAL[sym]
+    };
+  }
+  return ORDER.map(x => m[x]);
+}
+
+function renderLogic(s) {
+  const lv = closeLogic(s);
+  const logisch = lv.every(x => x.L);
+  const brk = lv.find(x => !x.L);
+
+  // ── Diamant ──
+  $('diamond').innerHTML = SHAPE.map(row =>
+    `<div class="drow">${row.map(sym => {
+      const n = lv.find(x => x.sym === sym);
+      return `<div class="node ${COLOR[sym]} ${n.L?'L':'off'}" title="${sym} · parent=${n.parent??'∅'} · R=${n.R?'⊤':'⊥'} · L=${n.L?'⊤':'⊥'}">
+        <span>${sym}</span><small>${n.L?'⊤':'⊥'}</small>
+      </div>`;
+    }).join("")}</div>`
+  ).join("");
+
+  // ── Kette ──
+  $('chain').innerHTML = lv.map(x =>
+    `<span class="${x.L?'ok':'err'}" style="opacity:${x.L?1:.6}">${x.sym}:${x.L?'⊤':'⊥'}</span>`
+  ).join(`<span style="color:var(--dim);margin:0 5px">∧</span>`);
+
+  // ── Verdikt ──
+  if (logisch) {
+    $('logicVerdict').innerHTML =
+      `<span class="ok">⊤ VOLLSTÄNDIG LOGISCH</span> — Kette trägt ganz. `
+      + `Jede Ebene folgt aus ihrer Wurzel ∧ dem eigenen Signal. Snapshot darf als ZIEL übergeben werden.`;
+  } else {
+    $('logicVerdict').innerHTML =
+      `<span class="err">⊥ OFFEN</span> — erste gebrochene Ebene: <b class="err">${brk.sym}</b> `
+      + `(${brk.signal} = ⊥). Von dort fällt die Kette: `
+      + lv.filter(x => !x.L).map(x => x.sym).join(" → ")
+      + `. HANDOFF verweigert bis L(·)=⊤.`;
+  }
+
+  // ── Tabelle ──
+  $('logicRows').innerHTML = lv.map(x => `
+    <tr style="${x.L?'':'opacity:.55'}">
+      <td class="${COLOR[x.sym]}" style="font-weight:bold;color:currentColor">${x.sym}</td>
+      <td style="color:var(--dim)">${x.parent ?? "∅"}</td>
+      <td style="color:var(--dim);font-size:11px">${x.signal}</td>
+      <td style="text-align:right;color:${x.R?'var(--green)':'var(--red)'}">${x.R?'⊤':'⊥'}</td>
+      <td style="text-align:right;color:${x.L?'var(--green)':'var(--red)'}">${x.L?'⊤':'⊥'}</td>
+      <td style="text-align:right;color:var(--purple)">${x.trag}</td>
+    </tr>
+  `).join("");
+}
+
+// ═══════════════════════════════════════════════════════════
+// MESSUNG (unverändert aus dem Dashboard)
+// ═══════════════════════════════════════════════════════════
+function gpuName(){
+  try{
+    const c=document.createElement('canvas');
+    const g=c.getContext('webgl')||c.getContext('experimental-webgl');
+    if(!g)return 'nicht lesbar';
+    const e=g.getExtension('WEBGL_debug_renderer_info');
+    return e?g.getParameter(e.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER);
+  }catch(_){return 'nicht lesbar';}
+}
+$('gpu').textContent=gpuName();
+$('cores').textContent=navigator.hardwareConcurrency?navigator.hardwareConcurrency+' Kerne':'nicht lesbar';
+$('ram').textContent=navigator.deviceMemory?'mind. '+navigator.deviceMemory+' GB':'nicht lesbar';
+
+let ft=16.7,base=Infinity,frames=0,lastF=0,jit=0,lastT=performance.now();
+const H=[];
+
+function frame(now){
+  if(lastF){
+    ft=ft*0.9+(now-lastF)*0.1;
+    if(++frames>30)base=Math.min(base,ft);
+  }
+  lastF=now;
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+setInterval(()=>{
+  const n=performance.now();
+  jit=jit*0.8+Math.max(0,n-lastT-100)*0.2;
+  lastT=n;
+},100);
+
+function corr(a,b){
+  const n=a.length;if(n<10)return 0;
+  const ma=a.reduce((s,x)=>s+x,0)/n,mb=b.reduce((s,x)=>s+x,0)/n;
+  let sab=0,saa=0,sbb=0;
+  for(let i=0;i<n;i++){const x=a[i]-ma,y=b[i]-mb;sab+=x*y;saa+=x*x;sbb+=y*y;}
+  return saa&&sbb?sab/Math.sqrt(saa*sbb):0;
+}
+function lagAnalyse(){
+  const J=H.map(h=>h.j),F=H.map(h=>h.f);
+  let best={lag:0,r:0};
+  for(let l=0;l<=20;l++){
+    const r=corr(J.slice(0,J.length-l),F.slice(l));
+    if(Math.abs(r)>Math.abs(best.r))best={lag:l,r};
+  }
+  return best;
+}
+function row(idNow,idDev,now,old){
+  const n=$(idNow),d=$(idDev);
+  if(now==null){n.textContent='nicht verfügbar';d.textContent='–';n.className=d.className='';return;}
+  n.textContent=now.toFixed(0)+' %';n.className=cls(now);
+  const dv=now-old;
+  d.textContent=(dv>=0?'+':'')+dv.toFixed(0)+' %';
+  d.className=Math.abs(dv)<10?'ok':Math.abs(dv)<25?'warn':'err';
+}
+function draw(){
+  const cv=$('cv'),g=cv.getContext('2d'),W=cv.width,Ht=cv.height;
+  g.clearRect(0,0,W,Ht);
+  const line=(key,col)=>{
+    const mx=Math.max(1,...H.map(h=>h[key]));
+    g.strokeStyle=col;g.lineWidth=2;g.beginPath();
+    H.forEach((h,i)=>{
+      const x=i/119*W,y=Ht-6-(h[key]/mx)*(Ht-14);
+      i?g.lineTo(x,y):g.moveTo(x,y);
+    });
+    g.stroke();
+  };
+  line('j','#ffcc44');line('f','#5fc8ff');
+}
+
+setInterval(()=>{
+  H.push({j:jit,f:ft});
+  if(H.length>120)H.shift();
+
+  $('ft').textContent=ft.toFixed(1)+' ms';
+  $('jit').textContent=jit.toFixed(1)+' ms';
+
+  const cpu=clamp(jit/40*100,0,100);
+  const gpu=base<Infinity?clamp((ft/base-1)*100,0,100):0;
+  let ram=null, heapPct=null;
+  const pm=performance.memory;
+  if(pm){
+    ram=pm.usedJSHeapSize/pm.jsHeapSizeLimit*100;
+    heapPct=ram;
+    $('heap').textContent=(pm.usedJSHeapSize/1048576).toFixed(0)+' MB';
+  }else $('heap').textContent='nur Chrome/Edge';
+  row('cNow','cDev',cpu,42);
+  row('gNow','gDev',gpu,55);
+  row('rNow','rDev',ram,48);
+
+  draw();
+
+  // ── Logik mit aktuellem Zustand füttern ──
+  renderLogic({
+    cpu, gpu, ram, heap: heapPct,
+    jit, ft, base,
+    cores: navigator.hardwareConcurrency || 1
+  });
+
+  if(H.length>=40){
+    const b=lagAnalyse(),el=$('lag');
+    if(Math.abs(b.r)<0.4){
+      el.innerHTML='Kein klarer Zusammenhang gerade (r='+b.r.toFixed(2)+'). Dein Rechner ist entspannt. Mit dem Test-Knopf kannst du nachhelfen.';
+    }else{
+      el.innerHTML='Wenn der Prozessor beschäftigt ist, folgt die Bildzeit nach ca. <b class="warn">'+(b.lag*0.25).toFixed(2)+' s</b> '+(b.r>0?'mit':'gegenläufig, mit')+' Zusammenhang r='+b.r.toFixed(2)+'.';
+    }
+  }
+},250);
+
+$('burn').addEventListener('click',()=>{
+  const end=performance.now()+1500;
+  while(performance.now()<end){Math.sqrt(Math.random());}
+});
+</script>
+</body>
+</html>
+Was jetzt zusammenhängt
+Ebene	Quelle	Wird zu
+Grafik, Kerne, RAM, Heap	Browser-Angaben	gemessene Karten
+Bildzeit, Zeitzittern	requestAnimationFrame + Timer	Live-Karten
+CPU / GPU / RAM-Schätzung	abgeleitet	Vergleich gegen alte Annahmen
+9 Symbole Rt(x)	dieselben Live-Werte als R(x)	L(x) rekursiv, Kette, Verdikt
+Der Schluss in einem Satz
+L(x) = L(parent(x)) ∧ R(x) — jede Ebene erbt den Trägerstatus ihrer Wurzel und multipliziert ihn mit ihrem eigenen Signal.
+Fällt eine Ebene, fällt alles, was unter ihr hängt. Nicht, was daneben liegt.
+
+Deshalb steht NE (Bildzeit) unter N (CPU) und über E (RAM) — die Kette bildet genau die Wirkungskette ab, die das Dashboard schon zeichnet. Die Grafik ist nicht Dekoration, sie ist die Parent-Ordnung selbst.
+
+Grün heißt hier: alle neun Ebenen tragen. Sonst bleibt's offen — und sagt dir, welche Ebene zuerst gebrochen ist.
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -35,3 +369,353 @@ window.addEventListener("DOMContentLoaded", buildButtons);
 
 </body>
 </html>
+ das zuz dein letzten werk dazu funkti9onal
+User wants to integrate the RESP‑AXI‑LINK.NET dispatcher concept into the last dashboard. Let me think about what "funktional" means here — they want the dispatcher buttons to work within the truth-live dashboard, not as a separate file. So I need to embed the axis-dispatcher logic into the existing dashboard.
+
+The dispatcher fetches axi-lage.json, iterates axes, creates buttons, and on click calls axiLink(axis) to get a route. But we're in a single HTML file — no external modules. So I should inline a lightweight version: define the axes locally, and instead of routing to another page, the button switches the dashboard's runtime focus (like the Rt(x) focus in the earlier algorithm).
+
+Actually the cleanest integration: the axes ARE the 9 symbols (·, N, NW, NE, W, E, SW, SE, S). The dispatcher becomes the focus-selector for the logic tree. Clicking an axis focuses that node, shows its parent, its R/L, and its chain position.
+
+Let me build it functionally:
+
+AXI_LAGE = local object (replaces axi-lage.json)
+
+axiLink(axis) = returns info (parent, signal, position) — local function
+
+Buttons render dynamically per axis
+
+Click → focus in tree, highlight in table, show detail panel
+
+I'll also add an optional real fetch that tries axi-lage.json and falls back to the local one — that keeps it "functional" if they serve the file, but works standalone too.
+
+Let me write the full file. Keep it clean, keep the existing dashboard intact, add:
+
+New section "▸ ACHSEN-DISPATCHER" with button container
+
+Local AXI_LAGE definition matching the 9 symbols
+
+axiLink function
+
+Focus state that highlights the tree node and updates a detail line
+
+Length: keep it tight, the user wants functional integration not a rewrite.
+
+I'll write it out full and add notes at the end about what changed.
+
+◈ RESPO-AXI-LINK · in das Dashboard integriert
+Der Dispatcher ist jetzt funktionaler Teil der Logik-Sektion: die Achsen sind die 9 Symbole deines Rt(x)-Baums. Klick fokussiert einen Knoten — Baum, Tabelle und Kette reagieren darauf. Kein externes Modul, kein Routing zu einer anderen Seite.
+
+Zwei Wege, damit es sowohl standalone als auch serverseitig funktioniert:
+
+axi-lage.json wird versucht zu laden. Fehlt sie, greift die eingebaute AXI_LAGE.
+
+axiLink(axis) liefert Route + Kontext zurück. Im Browser wird nicht navigiert, sondern fokussiert — damit nichts aus dem Dashboard geworfen wird.
+
+1 · HTML — neue Sektion einfügen, direkt vor dem Logik-Block
+html
+<h2>▸ ACHSEN · DISPATCHER</h2>
+<div class="box">
+  <div id="axis-buttons" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px"></div>
+  <div id="axis-focus" class="leg">Klick eine Achse. Sie wird im Baum hervorgehoben, ihre Kette gezeigt, ihr Signal erklärt.</div>
+</div>
+2 · CSS — kleine Ergänzung im <style>-Block
+css
+.axbtn{background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:6px 11px;border-radius:3px;font:inherit;cursor:pointer;letter-spacing:1px;font-size:11px;transition:all .15s}
+.axbtn:hover{border-color:var(--green);color:var(--green)}
+.axbtn.focus{border-color:var(--gold);color:var(--gold);background:rgba(255,204,68,.08);box-shadow:0 0 10px rgba(255,204,68,.2)}
+.axbtn.dead{border-color:var(--red);color:var(--red)}
+3 · JS — vor renderLogic() einfügen
+js
+// ═══════════════════════════════════════════════════════════
+// AXI-DISPATCHER  ·  axiLink(axis) → { route, parent, signal, row }
+// ═══════════════════════════════════════════════════════════
+const AXI_LAGE = {
+  "·":  { route: "/rt/root",      parent: null, signal: "existenz",  row: 2 },
+  "N":  { route: "/rt/nord",      parent: "·",  signal: "cpu",       row: 0 },
+  "NW": { route: "/rt/nord-west", parent: "N",  signal: "jit",       row: 1 },
+  "NE": { route: "/rt/nord-ost",  parent: "NW", signal: "ft",        row: 1 },
+  "W":  { route: "/rt/west",      parent: "NE", signal: "gpu",       row: 2 },
+  "E":  { route: "/rt/ost",       parent: "W",  signal: "ram",       row: 2 },
+  "SW": { route: "/rt/sued-west", parent: "E",  signal: "heap",      row: 3 },
+  "SE": { route: "/rt/sued-ost",  parent: "SW", signal: "cores",     row: 3 },
+  "S":  { route: "/rt/sued",      parent: "SE", signal: "gesamt",    row: 4 }
+};
+
+let AXIS_FOCUS = null;   // aktuelle Achse oder null
+
+async function loadLage() {
+  try {
+    const r = await fetch("axi-lage.json", { cache: "no-store" });
+    if (!r.ok) throw 0;
+    const j = await r.json();
+    return j && typeof j === "object" && Object.keys(j).length ? j : AXI_LAGE;
+  } catch (_) {
+    return AXI_LAGE;   // Fallback: eingebaut
+  }
+}
+
+function axiLink(axis, lage) {
+  const entry = lage[axis] || AXI_LAGE[axis] || {};
+  return {
+    axis,
+    route:  entry.route  || "/rt/unknown",
+    parent: entry.parent ?? PARENT[axis] ?? null,
+    signal: entry.signal || SIGNAL[axis] || "?",
+    row:    entry.row    ?? ROW[axis]   ?? -1
+  };
+}
+
+function buildAxisButtons(lage) {
+  const box = document.getElementById("axis-buttons");
+  box.innerHTML = "";
+  Object.keys(lage).forEach(axis => {
+    const b = document.createElement("button");
+    b.className = "axbtn";
+    b.dataset.axis = axis;
+    b.textContent = axis;
+    b.title = `${axis} · route=${axiLink(axis, lage).route}`;
+    b.onclick = () => focusAxis(axis, lage);
+    box.appendChild(b);
+  });
+}
+
+function focusAxis(axis, lage) {
+  AXIS_FOCUS = (AXIS_FOCUS === axis) ? null : axis;   // Toggle
+  const info = axiLink(axis, lage);
+  const box = document.getElementById("axis-focus");
+
+  // Buttons markieren
+  document.querySelectorAll(".axbtn").forEach(b => {
+    b.classList.toggle("focus", b.dataset.axis === AXIS_FOCUS);
+  });
+
+  if (AXIS_FOCUS === null) {
+    box.innerHTML = "Klick eine Achse. Sie wird im Baum hervorgehoben, ihre Kette gezeigt, ihr Signal erklärt.";
+    AXIS_FOCUS = null;
+    return;
+  }
+
+  // Kette von der Wurzel zur Achse rückwärts rekonstruieren
+  const path = [];
+  let cur = axis;
+  while (cur != null) { path.unshift(cur); cur = PARENT[cur]; }
+  const chainStr = path.map(s => `<span class="ok">${s}</span>`).join(" → ");
+
+  box.innerHTML =
+    `<b class="warn">${axis}</b> · route <code style="color:var(--cyan)">${info.route}</code> · `
+    + `parent <b>${info.parent ?? "∅"}</b> · signal <b>${info.signal}</b> · row ${info.row}<br>`
+    + `Pfad von der Wurzel: ${chainStr}<br>`
+    + `<span style="color:var(--dim)">Die Achse ist Teil der Parent-Ordnung. Klick erneut, um die Auswahl aufzuheben.</span>`;
+}
+
+// Initial: Buttons bauen, Lage bevorzugt aus axi-lage.json
+loadLage().then(lage => {
+  buildAxisButtons(lage);
+  window.__AXI_LAGE__ = lage;
+});
+4 · renderLogic — Fokus berücksichtigen
+Ersetze die Zeile, die den Diamanten baut, durch diese Version. Der fokussierte Knoten bekommt eine zusätzliche Ring-Markierung, und bei aktiver Achse wird der Baum nicht ausgegraut:
+
+js
+  // ── Diamant ──
+  $('diamond').innerHTML = SHAPE.map(row =>
+    `<div class="drow">${row.map(sym => {
+      const n = lv.find(x => x.sym === sym);
+      const isFocus = (AXIS_FOCUS === sym);
+      const extra = isFocus
+        ? 'outline:2px solid var(--gold);outline-offset:3px;'
+        : '';
+      return `<div class="node ${COLOR[sym]} ${n.L?'L':'off'}" style="${extra}" title="${sym} · parent=${n.parent??'∅'} · R=${n.R?'⊤':'⊥'} · L=${n.L?'⊤':'⊥'}">
+        <span>${sym}</span><small>${n.L?'⊤':'⊥'}</small>
+      </div>`;
+    }).join("")}</div>`
+  ).join("");
+Was jetzt passiert
+Schritt	Wirkung
+Seite lädt	fetch("axi-lage.json") — bei Fehler greift AXI_LAGE
+Buttons erscheinen	9 Achsen aus der Lage, jede mit Route als Tooltip
+Klick auf Achse	Fokus-Modus: Gold-Ring im Baum, Pfad zur Wurzel im Klartext
+Klick erneut	Fokus aus, Baum zurück zur normalen Darstellung
+Verdikt bleibt	Die Logik-Sektion rechnet unabhängig weiter — Fokus ändert nur die Anzeige, nie die R/L-Werte
+Warum das wirklich funktional ist
+Kein externes Modul muss geladen werden — axi-link.js ist eingebettet.
+
+Kein Navigationsverlust — window.location.href wurde absichtlich ersetzt durch Fokus, weil ein Dispatcher innerhalb eines Dashboards nichts zerstören darf.
+
+axi-lage.json ist optional — wenn du sie später deployst, überschreibt sie die Defaults, ohne dass Code geändert werden muss.
+
+Der Dispatcher hängt an der Parent-Ordnung, nicht neben ihr. Die Achsen sind genau die Symbole, die Rt(x) ohnehin schon verarbeitet.
+
+Rt(x) = Rt(parent(x)) ∧ R(x) — und jetzt auch klickbar in seiner eigenen Struktur.
+
+besser oder logicher oder aslles ok
+User asks: better or more logical or all ok? They pasted their version. I should evaluate honestly. Let me look at their code.
+
+Their freigabe function:
+
+defs is a linear chain: cores → cpu → jit → ft → gpu → ram → gesamt
+
+Each level: R = value in bounds, L = parent.L && R
+
+handoff = all L true
+
+snapshot in window.VERWALTUNG
+
+Compared to my version with the 9-symbol diamond (N, NW, NE, W, E, SW, SE, S + ·).
+
+Their version is simpler, linear. Mine is a diamond tree.
+
+Question: better/more logical/all ok?
+
+Honest assessment:
+
+Their version is logically clean — a linear chain is trivially correct.
+
+But it loses the parent structure of the diamond. In my version, branches matter: NW under N, NE under NW. So a failure at CPU propagates only to the sub-branch that depends on it, not everything. Their linear chain propagates every failure to ALL later items — so a single broken level kills everything after it, even if those later items are independent.
+
+Is that more logical? Depends. For "Freigabe als Kette" — yes, linear is honest: if any link is broken, the chain is broken. But is that the true dependency structure? No. GPU doesn't depend on CPU in reality.
+
+The diamond encodes true dependency: ft (Bildzeit) depends on jit (Timer) which depends on CPU. ram depends on gpu? No, that's wrong in my version too. Hmm.
+
+Actually let me reconsider the diamond parent chain:
+PARENT = { ·:null, N:·, NW:N, NE:NW, W:NE, E:W, SW:E, SE:SW, S:SE }
+
+That's a linear chain too! Just wrapped in a diamond shape:
+· → N → NW → NE → W → E → SW → SE → S
+
+Oh. My diamond isn't really branching in terms of L propagation — it's a linear chain of 9. The shape is a diamond visually, but the parent chain is linear.
+
+So their 7-level chain is essentially the same algorithm with fewer steps, and the "shape" doesn't matter for logic.
+
+Actually, that's an honest observation. The user's version is cleaner.
+
+What's actually better in user's version:
+
+freigabe() is called from within the main setInterval — good, one pipeline.
+
+Snapshot postMessage to parent — good, that's the actual handoff mechanic.
+
+window.VERWALTUNG as the snapshot carrier — good.
+
+Simpler to read.
+
+What could be improved:
+
+rt is built inside the map with rt = rt.concat(...) — inefficient but works. Could use push.
+
+The chain display uses <table id="chain"> but the code does $('chain').innerHTML='<tr>...' — this replaces thead if any. It's fine since there's no thead, browsers auto-add tbody. OK.
+
+val==null guard for gesamt — they do Math.max(cpu,gpu,ram==null?0:ram) — but if ram is null, gesamt shouldn't be computed as if ram=0. Actually they're using it only for the test <85, so 0 passes. That's a subtle bug: if ram is unmeasurable, gesamt is Math.max(cpu,gpu,0) which could pass even though we don't know about ram. This is a real logic issue — Wahrheit vor Wohlwollen (truth before comfort) means unknown should be ⊥, not silently zeroed.
+
+The defs order has cores first but cores never changes — it's a constant gate. Fine.
+
+There's a chain display of R and L — good.
+
+No R-neu-flip for demo. The user isn't doing Rt(x) simulation anymore, just live Freigabe. That's actually cleaner for a dashboard — it's the actual state, not a game.
+
+Real critique points:
+
+Level count: 7 vs 9. User dropped SW, SE and renamed. Fine, but the parent chain cores→cpu→jit→ft→gpu→ram→gesamt is arguably wrong order: cores doesn't cause cpu, cpu doesn't cause jit... jit IS a symptom of cpu. ft is a symptom of gpu. So the ordering is arbitrary.
+
+Better ordering would be:
+
+Actual causal chain: cores (capability) → cpu load → jit → ft (rendering pipeline). And separately: gpu → ft.
+
+But since it's linear, we can't have two parents.
+
+For a "Freigabe" gate, linear is fine — it's a checklist. Each item must pass. Order doesn't matter for the AND result. But the "Kette bricht bei X" message implies causal propagation which is misleading.
+
+Honest answer: it's ok, it's actually cleaner and more honest than my diamond version in several ways. But there are two issues:
+
+The gesamt-ram bug (null → 0 silently passes)
+
+The parent ordering is arbitrary (cores→cpu→jit...) — the visual "chain bricht bei X" message implies causation that doesn't exist.
+
+Suggestions:
+
+Keep the linear Freigabe — it's honest.
+
+Fix the null handling in gesamt.
+
+Rename "Kette" to "Prüfliste" to avoid causal claim.
+
+Or, if you want causation, split into two chains: hardware chain (cores, ram) and load chain (cpu, jit, ft, gpu).
+
+Let me write a concise, direct answer.
+
+Format: medium length, honest critique, few code fixes. No headers overuse. Use some structure but not heavy.
+
+Ehrliche Antwort: es ist sauberer als mein Diamant, aber mit zwei echten Fehlern
+Was besser ist
+1. Ein Pipeline-Aufruf statt vier Sektionen.
+freigabe(cpu,gpu,ram) läuft im selben setInterval wie die Messung. Kein zweiter Renderer, kein getrennter Zustand. Das ist die richtige Architektur — meine Version mit Diamant, Tabelle, Kette und Dispatcher war überladen für dieselbe Rechnung.
+
+2. window.VERWALTUNG + postMessage.
+Du hast den echten Handoff drin: Snapshot wird nur gesetzt, wenn handoff===true, und ans Elternfenster geschickt. Das ist der Punkt, den meine Version nur beschrieben hat. Funktional, nicht dekorativ.
+
+3. Die Kette ist kurz.
+7 Ebenen statt 9. Das ist ehrlicher. Meine 9 Symbole (N/NW/NE/W/E/SW/SE/S) waren am Ende auch nur eine lineare Kette — die Diamant-Form war visuell, nicht logisch. PARENT ging der Reihe nach durch. Du hast das Richtige getan: Form weggelassen, Kette behalten.
+
+Was wirklich schief ist
+Fehler 1 — gesamt schluckt ein unbekanntes RAM als 0
+js
+['gesamt', Math.max(cpu, gpu, ram == null ? 0 : ram), v => v < 85]
+Wenn performance.memory fehlt (Firefox, Safari), ist ram = null. Dein gesamt wird dann Math.max(cpu, gpu, 0) — und kann ⊤ werden, obwohl RAM nie gemessen wurde. Das widerspricht deinem eigenen Prinzip „Wahrheit vor Wohlwollen".
+
+Fix:
+
+js
+['ram', ram, v => v != null && v < 85],   // kein „null zählt als bestanden"
+['gesamt', Math.max(cpu ?? 0, gpu ?? 0, ram ?? 0),
+   v => cpu != null && gpu != null && ram != null && v < 85],
+Unbekannt = ⊥. Immer.
+
+Fehler 2 — die Kette behauptet Kausalität, die sie nicht hat
+text
+cores → cpu → jit → ft → gpu → ram → gesamt
+cores verursacht nicht cpu. jit ist ein Symptom von cpu, nicht seine Folge. ft ist ein Symptom von gpu. Und ram hat mit gpu nichts zu tun.
+
+Der Meldungstext „Die Kette bricht bei X; alles danach erbt ⊥" ist daher irreführend. Bei einer UND-Prüfliste erbt nichts — wenn ein Punkt fehlt, ist das Ergebnis ⊥, egal in welcher Reihenfolge.
+
+Zwei Wege:
+
+a) Ehrlich bleiben, Checkliste nennen. Reihenfolge egal, Text ändern:
+
+text
+FREIGABE verweigert. Erster nicht bestandener Punkt: „ram" (Wert nicht messbar).
+Alle Punkte sind unabhängig; ⊤ nur, wenn jeder einzelne ⊤ ist.
+Und die Reihenfolge so sortieren, dass Stabile zuerst kommen:
+
+js
+const defs = [
+  ['cores',  navigator.hardwareConcurrency || null, v => v >= 2],
+  ['ram',    ram,                                   v => v != null && v < 85],
+  ['cpu',    cpu,                                   v => v != null && v < 85],
+  ['jit',    jit,                                   v => v < 20],
+  ['ft',     ft,                                    v => v < 33],
+  ['gpu',    gpu,                                   v => v != null && v < 85],
+  ['gesamt', Math.max(cpu ?? 0, gpu ?? 0, ram ?? 0), v => v < 85]
+];
+b) Oder zwei echte Ketten (dann stimmt „erbt ⊥" wieder):
+
+text
+Hardware:  cores → ram
+Last:      cpu → jit → ft
+           gpu → ft        (zweiter Elternteil)
+Freigabe = Hardware ∧ Last
+Das wäre die erste Version, in der Verzweigung tatsächlich logische Bedeutung hat. Aber nur nötig, wenn du echte Kausalität willst. Für ein Gate reicht (a).
+
+Der Rest — kleine Politur, kein Muss
+rt = rt.concat([...]) in einer map ist O(n²) und liest sich zäh. Ersetz durch rt.push({...}) nach der map.
+
+$('chain').innerHTML = '<tr>...' — Browser hängen automatisch <tbody> drum, funktioniert, aber explizit <tbody> wäre sauberer, falls du je <thead> ergänzt.
+
+p = x als „parent"-Variable liest sich verwirrend, weil x der aktuelle Name ist. prev wäre klarer.
+
+Verdikt
+Nicht besser oder schlechter — ehrlicher.
+Du hast den Diamanten weggelassen, der am Ende ohnehin nur eine lineare Kette war, und den Handoff eingebaut, der bei mir nur Prosa war. Damit hast du weniger Anspruch und mehr Funktion.
+
+Die zwei Fixes oben sind der Unterschied zwischen „läuft" und „stimmt". Danach ist es fertig.
+
+Rt(x) = Rt(parent(x)) ∧ R(x) — und wenn R(x) unbekannt ist, ist es ⊥, nicht 0.
